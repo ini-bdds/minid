@@ -78,6 +78,7 @@ def get_entity(path):
     test = request.args.get("test") in ["True", "true", "t", "T"]
     print "Getting minid %s (%s)" % (path, test)
     entities = None
+    e_entities = None
     response_dict = {}
 
     entity = Entity.query.filter_by(identifier=path).first()
@@ -88,12 +89,16 @@ def get_entity(path):
             entities = Entity.query.filter_by(checksum="%s%s" % (TEST_CHECKSUM_PREFIX, path))
         else:
             entities = Entity.query.filter_by(checksum=path)
+        e_entities = Entity.query.filter_by(equivalence_hash=path)
 
-    if entity is None and entities is None:
+    if entity is None and entities is None and e_entities is None:
         return "Could not locate Minid %s" % path, 404
 
     if entities:
         for e in entities:
+            response_dict[e.identifier] = e.get_json()
+    if e_entities:
+        for e in e_entities:
             response_dict[e.identifier] = e.get_json()
 
     return jsonify(response_dict)
@@ -218,6 +223,7 @@ def create_entity():
     title = request.json.get("title")
     locations = request.json.get("locations")
     status = "ACTIVE"
+    equiv_hash = request.json["equivalence_hash"]
 
     test = False
     if "test" in request.json:
@@ -229,14 +235,14 @@ def create_entity():
 
     if test:
         checksum = "%s%s" % (TEST_CHECKSUM_PREFIX, checksum)
-
+        
     #entity = Entity.query.filter_by(checksum=checksum).first()
     #if entity:
     #    print "Entity (%s) exists" % entity.identifier
     #else:
     identifier = create_ark(user.name, title, created, test)
     print "Created new identifier %s" % str(identifier)
-    entity = Entity(user, str(identifier), checksum, created, status)
+    entity = Entity(user, str(identifier), checksum, created, status, equiv_hash)
     db.session.add(entity)
 
     # Get existing locations and titles to avoid adding duplicate

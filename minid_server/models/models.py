@@ -26,6 +26,7 @@ class Entity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     identifier = db.Column(db.String(120), unique=True)
     checksum = db.Column(db.String(120))
+    equivalence_hash = db.Column(db.String(120))
     created = db.Column(db.DateTime())
     status = db.Column(db.String(120))
     obsoleted_by = db.Column(db.String(120))
@@ -33,12 +34,13 @@ class Entity(db.Model):
     miniduser = db.relationship('Miniduser',
             backref=db.backref('entities', lazy='joined'))
 
-    def __init__(self, miniduser, identifier, checksum, created, status):
+    def __init__(self, miniduser, identifier, checksum, created, status, equivalence_hash):
         self.miniduser = miniduser
         self.identifier = identifier
         self.checksum = checksum
         self.created = created
         self.status = status
+        self.equivalence_hash = equivalence_hash
 
     def get_json(self):
         u = self.miniduser.get_json()
@@ -46,6 +48,7 @@ class Entity(db.Model):
                 "identifier" : self.identifier,
                 "status" : self.status,
                 "checksum" : self.checksum, 
+                "equivalence_hash" : self.equivalence_hash,
                 "created" : self.created,
                 "obsoleted_by": self.obsoleted_by,
                 "creator": u["name"],

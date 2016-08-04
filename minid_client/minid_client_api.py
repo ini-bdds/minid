@@ -39,7 +39,6 @@ def create_default_config():
     with open(DEFAULT_CONFIG_FILE, 'w') as config_file:
         config_file.writelines(['[general]\n',
                                 'minid_server: http://minid.bd2k.org/minid\n',
-                                'username: \n',
                                 'email: \n',
                                 'orcid: \n',
                                 'code: \n'])
@@ -77,7 +76,7 @@ def create_entity(server, entity):
         logger.error("Error creating entity (%s) -- check parameters or config file for invalid values" % r.status_code)
 
 
-def entity_json(email, code, checksum, locations, title, test):
+def entity_json(email, code, checksum, locations, title, test, equivalence_hash):
     entity = {"email":  email, "code": code, "checksum": checksum}
     if test:
         entity["test"] = test
@@ -85,6 +84,8 @@ def entity_json(email, code, checksum, locations, title, test):
         entity["locations"] = locations
     if title: 
         entity["title"] = title
+    if equivalence_hash:
+        entity["equivalence_hash"] = equivalence_hash
     return entity
 
 
@@ -96,6 +97,10 @@ def print_entity(entity, as_json):
         print("Created by: %s (%s)" % (entity["creator"], entity["orcid"]))
         print("Created: %s" % entity["created"])
         print("Checksum: %s" % entity["checksum"])
+
+        if entity["equivalence_hash"]:
+            print ("Equivalence Hash: %s" % entity["equivalence_hash"])
+
         print("Status: %s" % entity["status"])
         if entity["obsoleted_by"]:
             print("Obsoleted by: %s" % entity["obsoleted_by"])
@@ -121,10 +126,10 @@ def register_user(server, email, name, orcid):
     return r.json()
 
 
-def register_entity(server, checksum, email, code, url=None, title='', test=False):
+def register_entity(server, checksum, email, code, url=None, title='', test=False, equivalence_hash=None):
     logger.info("Creating new identifier")
 
-    result = create_entity(server, entity_json(email, code, checksum, url, title, test))
+    result = create_entity(server, entity_json(email, code, checksum, url, title, test, equivalence_hash))
 
     if result:
         logger.info("Created/updated minid: %s" % result["identifier"])

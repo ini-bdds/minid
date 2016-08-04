@@ -24,6 +24,7 @@ def parse_cli():
     parser.add_argument('--locations',  nargs='+', help="Locations for accesing the file")
     parser.add_argument('--status', help="Status of the minid (ACTIVE or TOMBSTONE)")
     parser.add_argument('--obsoleted_by', help="A minid that replaces this minid")
+    parser.add_argument("--equivalence_hash", help="A hash that can be uesd to compare equivalent content")
     parser.add_argument('--config', default=minid_client.DEFAULT_CONFIG_FILE)
     parser.add_argument('--register_user', action="store_true", help="Register a new user")
     parser.add_argument('--email', help="User email address")
@@ -83,7 +84,7 @@ def main():
             minid_client.register_entity(server, checksum,
                                          args.email if args.email else config["email"],
                                          args.code if args.code else config["code"],
-                                         locations, args.title, args.test)
+                                         locations, args.title, args.test, args.equivalence_hash)
     elif args.update:
         if entities is None:
             print("No entity found to update. You must use a valid minid.")
