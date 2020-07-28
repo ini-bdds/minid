@@ -3,7 +3,13 @@ Minimal Viable Identifier Client
 
 A minid (Minimal Viable Identifier) is an identifier that is sufficiently simple to make creation and use trivial, while still having enough substance to make data easily findable, accessible, interoperable, and reusable (FAIR). 
 
-The minid server code is avaialble at `https://github.com/fair-research/minid-server <https://github.com/fair-research/minid-server>`_
+The minid server code is available at `https://github.com/fair-research/minid-server <https://github.com/fair-research/minid-server>`_
+
+A Newer Minid Client Available
+------------------------------
+
+This Minid Client will soon be discontinued and the service shutdown, please
+use the newer `Minid Client here <https://github.com/fair-research/minid/tree/develop>`_.
 
 Installation
 ------------
